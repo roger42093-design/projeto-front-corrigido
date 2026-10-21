@@ -1,0 +1,168 @@
+/* src/pages/Login.css */
+
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+  color: white;
+}
+
+.login-logo {
+  position: absolute;
+  top: 30px;
+  left: 50px;
+}
+
+.login-logo h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: 700;
+  background: linear-gradient(90deg, #a78bfa, #f43f5e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Efeito de Vidro (Glassmorphism) */
+.login-glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.login-error {
+  color: #fb7185;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 15px 12px 45px; /* Espaço extra à esquerda para o ícone */
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  font-size: 0.85rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.forgot-password {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.forgot-password:hover {
+  color: white;
+}
+
+/* Botão com Gradiente Red/Blue */
+.login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #be123c, #1d4ed8);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.login-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(190, 18, 60, 0.6);
+}
+
+/* Rodapé */
+.login-footer {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.login-footer a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+}
+
+.login-footer a:hover {
+  color: white;
+}
