@@ -1,108 +1,90 @@
-// src/pages/Login.jsx
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
-import './Login.css'; // Vamos criar este ficheiro a seguir
-import splashImage from '../assets/print certo.jpg'; // Reutilizamos a imagem de fundo
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Importe o Link
+import './Login.css'; 
+import bgImage from '../assets/Imagem_Login.jpg'; 
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [erro, setErro] = useState('');
-  
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
-    setErro('');
+    console.log('Tentativa de Login:', { email, password });
+  };
 
-    try {
-      // Simulação da chamada à API
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      if (!response.ok) throw new Error('Credenciais inválidas');
-      const data = await response.json();
-      
-      login(data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      setErro('Erro ao fazer login. Verifique os seus dados.');
-    }
+  const handleGoogleAuth = () => {
+    console.log('Login com Google');
   };
 
   return (
-    <div className="login-container" style={{ backgroundImage: `url('${splashImage}')` }}>
-      
-      {/* Logótipo no canto superior esquerdo */}
-      <div className="login-logo">
-        <h1>HelpTec</h1>
-      </div>
+    <div className="login-wrapper">
+      <div className="login-left">
+        <div className="form-content">
+          <h1 className="title">
+            Faça seu Login<span className="pink-dot">.</span>
+          </h1>
 
-      {/* Caixa de Login com efeito Glassmorphism */}
-      <div className="login-glass-card">
-        <h2 className="login-title">Acesso ao Portal de Suporte</h2>
-        
-        {erro && <p className="login-error">{erro}</p>}
+          <form onSubmit={handleLoginSubmit}>
+            <div className="input-block">
+              <label>Email</label>
+              <div className="gradient-border-input">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="input-block">
+              <label>Senha</label>
+              <div className="gradient-border-input">
+                <svg className="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="forgot-link-wrapper">
+                <Link to="/esqueci-senha" className="text-link">Esqueceu minha senha</Link>
+              </div>
+            </div>
+            
+            <button type="submit" className="btn-entrar">
+              Entrar
+            </button>
+          </form>
 
-        <form onSubmit={handleLogin}>
-          {/* Campo E-mail/Usuário */}
-          <div className="input-group">
-            <label>E-mail ou Usuário</label>
-            <div className="input-wrapper">
-              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <input
-                type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+          <div className="divider">
+            <span>ou</span>
           </div>
-          
-          {/* Campo Senha */}
-          <div className="input-group">
-            <label>Senha</label>
-            <div className="input-wrapper">
-              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-          
-          {/* Opções extras */}
-          <div className="login-options">
-            <label className="remember-me">
-              <input type="checkbox" />
-              <span>Lembrar de mim</span>
-            </label>
-            <a href="#" className="forgot-password">Esqueceu a senha?</a>
-          </div>
-          
-          {/* Botão com gradiente */}
-          <button type="submit" className="login-submit-btn">
-            ENTRAR
+
+          <button type="button" className="btn-google" onClick={handleGoogleAuth}>
+            {/* Ícone do Google omitido para brevidade, use o mesmo SVG de antes */}
+            Entrar com o Google
           </button>
-        </form>
+
+          <div className="register-wrapper">
+            {/* Redireciona para a rota /cadastro */}
+            <Link to="/cadastro" className="text-link secondary">
+              Ainda não tenho uma conta
+            </Link>
+          </div>
+        </div>
+
+        <div className="footer-credits">
+          2023 | Desenvolvido por <a href="#leonardo">Leonardo Diman</a>
+        </div>
       </div>
 
-      {/* Rodapé */}
-      <div className="login-footer">
-        <p>HelpTec 2024 © Todos os direitos reservados. <a href="#">Política de Privacidade</a> | <a href="#">Termos de Serviço</a>.</p>
+      <div className="login-right" style={{ backgroundImage: `url(${bgImage})` }}>
+        <div className="dark-fade"></div>
       </div>
     </div>
   );

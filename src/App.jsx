@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
 import Login from './pages/Login';
+import Cadastro from './pages/Cadastro'; // Importação da página de Cadastro adicionada
 
 // CSS e Imagem da Splash Screen
 import './App.css';
@@ -60,6 +61,9 @@ function App() {
         <Routes>
           {/* Rota pública de Login */}
           <Route path="/login" element={<Login />} />
+          
+          {/* Rota pública de Cadastro */}
+          <Route path="/cadastro" element={<Cadastro />} />
 
           {/* Rota privada do Dashboard (só acede se estiver logado) */}
           <Route 
