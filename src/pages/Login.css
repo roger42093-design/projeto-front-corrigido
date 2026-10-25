@@ -216,7 +216,7 @@ body, html {
 /* Responsividade */
 @media (max-width: 800px) {
   .login-right {
-    display: none; /* Esconde a imagem em ecrãs mais pequenos */
+    display: none;
   }
   .login-left {
     flex: 1 0 100%;

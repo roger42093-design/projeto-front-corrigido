@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
+
+// Importações corrigidas: sem chavetas, capturando a exportação padrão
 import Login from './pages/Login';
-import Cadastro from './pages/Cadastro'; // Importação da página de Cadastro adicionada
+import Cadastro from './pages/Cadastro';
 
 // CSS e Imagem da Splash Screen
 import './App.css';
