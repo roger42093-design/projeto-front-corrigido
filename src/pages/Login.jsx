@@ -1,90 +1,87 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Importe o Link
-import './Login.css'; 
-import bgImage from '../assets/Imagem_Login.jpg'; 
+import { Link, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { FormField } from '../components/FormField';
+import bgImage from '../assets/Imagem_Login.jpg';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    console.log('Tentativa de Login:', { email, password });
+  const emailSchema = z.string().email("Formato de email inválido");
+  const passwordSchema = z.string().min(6, "A senha deve ter no mínimo 6 caracteres");
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
   };
 
-  const handleGoogleAuth = () => {
-    console.log('Login com Google');
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const isEmailValid = emailSchema.safeParse(form.email).success;
+    const isPasswordValid = passwordSchema.safeParse(form.password).success;
+
+    if (!isEmailValid || !isPasswordValid) return;
+
+    navigate('/dashboard');
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-left">
-        <div className="form-content">
-          <h1 className="title">
-            Faça seu Login<span className="pink-dot">.</span>
+    <div className="flex min-h-screen bg-gray-900 font-sans">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          <h1 className="text-4xl font-bold text-white mb-8">
+            Faça seu Login<span className="text-pink-500">.</span>
           </h1>
 
-          <form onSubmit={handleLoginSubmit}>
-            <div className="input-block">
-              <label>Email</label>
-              <div className="gradient-border-input">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="flex flex-col">
+            <FormField
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="exemplo@email.com"
+              value={form.email}
+              onChange={handleChange}
+              validation={emailSchema}
+            />
+            
+            <FormField
+              label="Senha"
+              name="password"
+              type="password"
+              placeholder="Sua senha secreta"
+              value={form.password}
+              onChange={handleChange}
+              validation={passwordSchema}
+            />
+            
+            <div className="flex justify-end mb-6">
+              <Link to="/esqueci-senha" className="text-sm text-pink-400 hover:text-pink-300">
+                Esqueceu minha senha?
+              </Link>
             </div>
             
-            <div className="input-block">
-              <label>Senha</label>
-              <div className="gradient-border-input">
-                <svg className="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="forgot-link-wrapper">
-                <Link to="/esqueci-senha" className="text-link">Esqueceu minha senha</Link>
-              </div>
-            </div>
-            
-            <button type="submit" className="btn-entrar">
+            <button type="submit" className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-semibold">
               Entrar
             </button>
           </form>
 
-          <div className="divider">
-            <span>ou</span>
+          <div className="flex items-center my-6 text-gray-500">
+            <div className="flex-grow border-t border-gray-700"></div>
+            <span className="px-4 text-sm font-medium">ou</span>
+            <div className="flex-grow border-t border-gray-700"></div>
           </div>
 
-          <button type="button" className="btn-google" onClick={handleGoogleAuth}>
-            {/* Ícone do Google omitido para brevidade, use o mesmo SVG de antes */}
-            Entrar com o Google
-          </button>
-
-          <div className="register-wrapper">
-            {/* Redireciona para a rota /cadastro */}
-            <Link to="/cadastro" className="text-link secondary">
+          <div className="mt-8 text-center">
+            <Link to="/cadastro" className="text-gray-400 hover:text-white">
               Ainda não tenho uma conta
             </Link>
           </div>
         </div>
-
-        <div className="footer-credits">
-          2023 | Desenvolvido por <a href="#leonardo">Leonardo Diman</a>
-        </div>
       </div>
 
-      <div className="login-right" style={{ backgroundImage: `url(${bgImage})` }}>
-        <div className="dark-fade"></div>
+      <div className="hidden md:block w-1/2 bg-cover bg-center relative" style={{ backgroundImage: `url(${bgImage})` }}>
+        <div className="absolute inset-0 bg-black/50"></div>
       </div>
     </div>
   );
