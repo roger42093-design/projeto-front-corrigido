@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { AuthContext } from '../contexts/AuthContext';
-// Importação atualizada vindo de src/shared/components
 import { FormField } from '../shared/components/FormField';
+import { authService } from '../services/authService';
 import bgImage from '../assets/Imagem_Login.jpg'; 
 
 export default function LoginFormComponent(props) {
@@ -13,26 +13,18 @@ export default function LoginFormComponent(props) {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 1. Definição das regras de validação com Zod
   const emailSchema = z.string().email("Formato de email inválido");
   const passwordSchema = z.string().min(6, "A senha deve ter no mínimo 6 caracteres");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setForm({
-      ...form,
-      [name]: value
-    });
-    
+    setForm({ ...form, [name]: value });
     if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ""
-      });
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
-  const simularEnvioServidor = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const emailResult = emailSchema.safeParse(form.email);
@@ -46,27 +38,26 @@ export default function LoginFormComponent(props) {
       return;
     }
 
-    console.log('Enviando dados para o servidor...', form);
-    login("meu-token-jwt-simulado");
-    navigate('/dashboard');
+    try {
+      const response = await authService.login(form.email, form.password);
+      const token = response?.token || response?.accessToken || response;
+      login(token);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      alert("Erro ao fazer login. Verifique suas credenciais!");
+    }
   };
 
   return (
     <div className="flex min-h-screen w-screen bg-[#050505] text-white font-sans">
-      {/* PAINEL ESQUERDO */}
-      <div 
-        className="w-full md:w-[45%] bg-[#050505] flex flex-col justify-center items-center relative z-10"
-        style={{ padding: '2rem' }}
-      >
+      <div className="w-full md:w-[45%] bg-[#050505] flex flex-col justify-center items-center relative z-10" style={{ padding: '2rem' }}>
         <div className="w-full max-w-[400px]">
-          <h1 
-            className="text-4xl sm:text-[2.8rem] font-bold text-left text-white leading-tight"
-            style={{ marginBottom: '2.5rem' }}
-          >
+          <h1 className="text-4xl sm:text-[2.8rem] font-bold text-left text-white leading-tight" style={{ marginBottom: '2.5rem' }}>
             Faça seu Login<span className="text-[#ff3b6b]">.</span>
           </h1>
 
-          <form onSubmit={simularEnvioServidor}>
+          <form onSubmit={handleSubmit}>
             <FormField
               label="Email"
               name="email"
@@ -104,15 +95,10 @@ export default function LoginFormComponent(props) {
             </button>
           </form>
 
-          {/* DIVISOR "OU" */}
-          <div 
-            className="flex items-center text-center text-[#6b7280] before:content-[''] before:flex-1 before:border-b before:border-[#1f2937] after:content-[''] after:flex-1 after:border-b after:border-[#1f2937]"
-            style={{ margin: '1.5rem 0' }}
-          >
+          <div className="flex items-center text-center text-[#6b7280] before:content-[''] before:flex-1 before:border-b before:border-[#1f2937] after:content-[''] after:flex-1 after:border-b after:border-[#1f2937]" style={{ margin: '1.5rem 0' }}>
             <span style={{ padding: '0 15px', fontSize: '0.9rem' }} className="lowercase">ou</span>
           </div>
 
-          {/* BOTÃO GOOGLE */}
           <button 
             type="button" 
             className="w-full flex items-center justify-center bg-transparent border border-[#374151] rounded-lg text-[#e5e7eb] text-base font-medium cursor-pointer transition-all duration-200 hover:bg-[#111827] hover:border-[#4b5563]"
@@ -135,11 +121,7 @@ export default function LoginFormComponent(props) {
         </div>
       </div>
 
-      {/* PAINEL DIREITO (Imagem) */}
-      <div 
-        className="hidden md:block flex-1 bg-cover bg-center bg-no-repeat relative" 
-        style={{ backgroundImage: `url(${bgImage})` }}
-      >
+      <div className="hidden md:block flex-1 bg-cover bg-center bg-no-repeat relative" style={{ backgroundImage: `url(${bgImage})` }}>
         <div className="absolute top-0 left-0 w-[250px] h-full bg-gradient-to-r from-[#050505] to-transparent"></div>
       </div>
     </div>

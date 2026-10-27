@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-// Importação atualizada vindo de src/shared/components
 import { FormField } from '../shared/components/FormField';
+import { authService } from '../services/authService';
 import bgImage from '../assets/Imagem_Login.jpg'; 
 
 export default function RegisterFormComponent(props) {
@@ -14,16 +14,9 @@ export default function RegisterFormComponent(props) {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
-    nome: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    telefone: "",
-    cep: "",
-    numero: ""
+    nome: "", email: "", password: "", confirmPassword: "", telefone: "", cep: "", numero: ""
   });
 
-  // Esquemas de validação Zod
   const nomeSchema = z.string().min(3, "O nome deve ter no mínimo 3 caracteres");
   const emailSchema = z.string().email("Formato de email inválido");
   const passwordSchema = z.string().min(6, "A senha deve ter no mínimo 6 caracteres");
@@ -34,10 +27,7 @@ export default function RegisterFormComponent(props) {
   const handleBasicChange = (e) => {
     const { name, value } = e.target;
     setBasicInfo({ ...basicInfo, [name]: value });
-    
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     if (name === "confirmPassword" || name === "password") {
       setErrors((prev) => ({ ...prev, confirmPassword: "" }));
     }
@@ -46,10 +36,7 @@ export default function RegisterFormComponent(props) {
   const handleAdditionalChange = (e) => {
     const { name, value } = e.target;
     setAdditionalInfo({ ...additionalInfo, [name]: value });
-    
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleFileChange = (e) => {
@@ -80,11 +67,9 @@ export default function RegisterFormComponent(props) {
     setIsBasicInfo(false);
   };
 
-  const handleBack = () => {
-    setIsBasicInfo(true);
-  };
+  const handleBack = () => setIsBasicInfo(true);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const telRes = telefoneSchema.safeParse(additionalInfo.telefone);
@@ -101,199 +86,79 @@ export default function RegisterFormComponent(props) {
       return;
     }
 
-    const formData = new FormData();
-    const dadosUsuario = {
-      nome: basicInfo.nome,
-      email: basicInfo.email,
-      password: basicInfo.password,
-      telefone: additionalInfo.telefone,
-      cep: additionalInfo.cep,
-      numero: additionalInfo.numero
-    };
+    try {
+      await authService.register({
+        nome: basicInfo.nome,
+        email: basicInfo.email,
+        password: basicInfo.password
+      });
 
-    formData.append("dadosUsuario", JSON.stringify(dadosUsuario));
-    
-    if (additionalInfo.foto) {
-      formData.append("foto", additionalInfo.foto);
+      alert("Cadastro realizado com sucesso! Faça seu login.");
+      navigate('/login');
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+      alert("Erro ao finalizar o cadastro no servidor.");
     }
-
-    console.log("FormData preparado para envio:");
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-    
-    alert("Cadastro finalizado com sucesso! Faça o seu login.");
-    navigate('/login');
   };
 
   return (
     <div className="flex min-h-screen w-screen bg-[#050505] text-white font-sans">
-      {/* PAINEL ESQUERDO */}
-      <div 
-        className="w-full md:w-[45%] bg-[#050505] flex flex-col justify-center items-center relative z-10"
-        style={{ padding: '2rem' }}
-      >
+      <div className="w-full md:w-[45%] bg-[#050505] flex flex-col justify-center items-center relative z-10" style={{ padding: '2rem' }}>
         <div className="w-full max-w-[400px]">
-          <h1 
-            className="text-4xl sm:text-[2.8rem] font-bold text-left text-white leading-tight"
-            style={{ marginBottom: '2.5rem' }}
-          >
+          <h1 className="text-4xl sm:text-[2.8rem] font-bold text-left text-white leading-tight" style={{ marginBottom: '2.5rem' }}>
             Crie sua conta<span className="text-[#ff3b6b]">.</span>
           </h1>
 
           {isBasicInfo ? (
             <div>
-              <FormField
-                label="Nome Completo"
-                name="nome"
-                type="text"
-                placeholder="Seu nome"
-                value={basicInfo.nome}
-                onChange={handleBasicChange}
-                validation={nomeSchema}
-                errorText={errors.nome}
-              />
+              <FormField label="Nome Completo" name="nome" type="text" placeholder="Seu nome" value={basicInfo.nome} onChange={handleBasicChange} validation={nomeSchema} errorText={errors.nome} />
+              <FormField label="Email" name="email" type="email" placeholder="exemplo@email.com" value={basicInfo.email} onChange={handleBasicChange} validation={emailSchema} errorText={errors.email} />
+              <FormField label="Senha" name="password" type="password" placeholder="Sua senha secreta" value={basicInfo.password} onChange={handleBasicChange} validation={passwordSchema} errorText={errors.password} />
+              <FormField label="Confirmar Senha" name="confirmPassword" type="password" placeholder="Repita a senha" value={basicInfo.confirmPassword} onChange={handleBasicChange} errorText={errors.confirmPassword} />
 
-              <FormField
-                label="Email"
-                name="email"
-                type="email"
-                placeholder="exemplo@email.com"
-                value={basicInfo.email}
-                onChange={handleBasicChange}
-                validation={emailSchema}
-                errorText={errors.email}
-              />
-
-              <FormField
-                label="Senha"
-                name="password"
-                type="password"
-                placeholder="Sua senha secreta"
-                value={basicInfo.password}
-                onChange={handleBasicChange}
-                validation={passwordSchema}
-                errorText={errors.password}
-              />
-
-              <FormField
-                label="Confirmar Senha"
-                name="confirmPassword"
-                type="password"
-                placeholder="Repita a senha"
-                value={basicInfo.confirmPassword}
-                onChange={handleBasicChange}
-                errorText={errors.confirmPassword}
-              />
-
-              <button 
-                type="button" 
-                onClick={handleNext}
-                className="w-full rounded-lg bg-gradient-to-r from-[#be123c] to-[#4338ca] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none"
-                style={{ padding: '14px', marginTop: '1.5rem' }}
-              >
+              <button type="button" onClick={handleNext} className="w-full rounded-lg bg-gradient-to-r from-[#be123c] to-[#4338ca] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none" style={{ padding: '14px', marginTop: '1.5rem' }}>
                 Próximo
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <FormField
-                label="Telefone"
-                name="telefone"
-                type="text"
-                placeholder="(00) 00000-0000"
-                value={additionalInfo.telefone}
-                onChange={handleAdditionalChange}
-                validation={telefoneSchema}
-                errorText={errors.telefone}
-              />
+              <FormField label="Telefone" name="telefone" type="text" placeholder="(00) 00000-0000" value={additionalInfo.telefone} onChange={handleAdditionalChange} validation={telefoneSchema} errorText={errors.telefone} />
 
               <div className="flex" style={{ gap: '10px' }}>
                 <div style={{ flex: 2 }}>
-                  <FormField
-                    label="CEP"
-                    name="cep"
-                    type="text"
-                    placeholder="00000-000"
-                    value={additionalInfo.cep}
-                    onChange={handleAdditionalChange}
-                    validation={cepSchema}
-                    errorText={errors.cep}
-                  />
+                  <FormField label="CEP" name="cep" type="text" placeholder="00000-000" value={additionalInfo.cep} onChange={handleAdditionalChange} validation={cepSchema} errorText={errors.cep} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <FormField
-                    label="Número"
-                    name="numero"
-                    type="text"
-                    placeholder="123"
-                    value={additionalInfo.numero}
-                    onChange={handleAdditionalChange}
-                    validation={numeroSchema}
-                    errorText={errors.numero}
-                  />
+                  <FormField label="Número" name="numero" type="text" placeholder="123" value={additionalInfo.numero} onChange={handleAdditionalChange} validation={numeroSchema} errorText={errors.numero} />
                 </div>
               </div>
 
-              {/* Input de Foto de Perfil com Borda Gradiente Original */}
               <div className="text-left" style={{ marginBottom: '1.5rem' }}>
-                <label 
-                  className="block text-sm font-medium text-[#ccc]" 
-                  style={{ marginBottom: '0.5rem' }}
-                >
+                <label className="block text-sm font-medium text-[#ccc]" style={{ marginBottom: '0.5rem' }}>
                   Foto de Perfil
                 </label>
-                <div 
-                  className="rounded-lg flex items-center"
-                  style={{
-                    background: 'linear-gradient(#050505, #050505) padding-box, linear-gradient(90deg, #1e3a8a, #be123c) border-box',
-                    border: '2px solid transparent',
-                    padding: '8px 12px'
-                  }}
-                >
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleFileChange} 
-                    className="w-full text-sm text-gray-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#1e3a8a] file:text-white hover:file:bg-[#be123c] file:cursor-pointer cursor-pointer" 
-                  />
+                <div className="rounded-lg flex items-center" style={{ background: 'linear-gradient(#050505, #050505) padding-box, linear-gradient(90deg, #1e3a8a, #be123c) border-box', border: '2px solid transparent', padding: '8px 12px' }}>
+                  <input type="file" accept="image/*" onChange={handleFileChange} className="w-full text-sm text-gray-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#1e3a8a] file:text-white hover:file:bg-[#be123c] file:cursor-pointer cursor-pointer" />
                 </div>
                 {fotoPreview && (
                   <div className="flex justify-center" style={{ marginTop: '15px' }}>
-                    <img 
-                      src={fotoPreview} 
-                      alt="Pré-visualização" 
-                      className="w-[90px] h-[90px] rounded-full object-cover border-2 border-[#be123c]" 
-                    />
+                    <img src={fotoPreview} alt="Pré-visualização" className="w-[90px] h-[90px] rounded-full object-cover border-2 border-[#be123c]" />
                   </div>
                 )}
               </div>
 
               <div className="flex" style={{ gap: '10px', marginTop: '1.5rem' }}>
-                <button 
-                  type="button" 
-                  onClick={handleBack}
-                  className="rounded-lg bg-[#374151] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none"
-                  style={{ flex: 1, padding: '14px' }}
-                >
+                <button type="button" onClick={handleBack} className="rounded-lg bg-[#374151] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none" style={{ flex: 1, padding: '14px' }}>
                   Voltar
                 </button>
-                <button 
-                  type="submit" 
-                  className="rounded-lg bg-gradient-to-r from-[#be123c] to-[#4338ca] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none"
-                  style={{ flex: 2, padding: '14px' }}
-                >
+                <button type="submit" className="rounded-lg bg-gradient-to-r from-[#be123c] to-[#4338ca] text-white text-[1.1rem] font-semibold cursor-pointer transition-opacity duration-200 hover:opacity-85 border-none" style={{ flex: 2, padding: '14px' }}>
                   Finalizar Cadastro
                 </button>
               </div>
             </form>
           )}
 
-          {/* DIVISOR "OU" */}
-          <div 
-            className="flex items-center text-center text-[#6b7280] before:content-[''] before:flex-1 before:border-b before:border-[#1f2937] after:content-[''] after:flex-1 after:border-b after:border-[#1f2937]"
-            style={{ margin: '1.5rem 0' }}
-          >
+          <div className="flex items-center text-center text-[#6b7280] before:content-[''] before:flex-1 before:border-b before:border-[#1f2937] after:content-[''] after:flex-1 after:border-b after:border-[#1f2937]" style={{ margin: '1.5rem 0' }}>
             <span style={{ padding: '0 15px', fontSize: '0.9rem' }} className="lowercase">ou</span>
           </div>
 
@@ -305,11 +170,7 @@ export default function RegisterFormComponent(props) {
         </div>
       </div>
 
-      {/* PAINEL DIREITO (Imagem) */}
-      <div 
-        className="hidden md:block flex-1 bg-cover bg-center bg-no-repeat relative" 
-        style={{ backgroundImage: `url(${bgImage})` }}
-      >
+      <div className="hidden md:block flex-1 bg-cover bg-center bg-no-repeat relative" style={{ backgroundImage: `url(${bgImage})` }}>
         <div className="absolute top-0 left-0 w-[250px] h-full bg-gradient-to-r from-[#050505] to-transparent"></div>
       </div>
     </div>
