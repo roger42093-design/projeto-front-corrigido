@@ -1,35 +1,24 @@
-// public/firebase-messaging-sw.js
+// public/firebase-messaging-sw.js (Gerado automaticamente pelo .env)
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-// Importa os scripts do Firebase compatíveis com Service Workers
-importScripts('https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.10.0/firebase-messaging-compat.js');
+firebase.initializeApp({
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+});
 
-// Cole AQUI as mesmas credenciais do seu arquivo firebase.js
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_MESSAGING_ID",
-  appId: "SEU_APP_ID"
-};
-
-// Inicializa o Firebase no Service Worker
-firebase.initializeApp(firebaseConfig);
-
-// Inicializa o Firebase Messaging
 const messaging = firebase.messaging();
 
-// Configura o recebimento de mensagens quando o app estiver em segundo plano (fechado ou em outra aba)
+// Handler para mensagens recebidas em segundo plano
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Mensagem recebida em segundo plano: ', payload);
-
-  const notificationTitle = payload.notification.title;
+  const { title, body, icon } = payload.notification || {};
   const notificationOptions = {
-    body: payload.notification.body,
-    // Você pode colocar o caminho para um ícone seu na pasta public (ex: '/logo.png')
-    icon: '/vite.svg' 
+    body,
+    icon: icon || '/logo192.png',
   };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(title, notificationOptions);
 });
