@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
-import { PrivateRoute } from './components/PrivateRoute';
+import { PrivateRoute } from './shared/components/PrivateRoute';
 
-import Login from './pages/Login';
-import Cadastro from './pages/Cadastro';
+
 
 import './App.css';
 import splashImage from './assets/print certo.jpg'; 
+import RegisterFormComponent from './pages/cadastro/Cadastro';
 
 // Componente Dashboard atualizado com botão de Logout
 const Dashboard = () => {
@@ -66,8 +66,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/cadastro" element={<RegisterFormComponent />}></Route>
           <Route 
             path="/dashboard" 
             element={
@@ -76,7 +75,7 @@ function App() {
               </PrivateRoute>
             } 
           />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/cadastro" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
