@@ -1,14 +1,40 @@
 // src/App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import { PrivateRoute } from './shared/components/PrivateRoute';
-
-
 
 import './App.css';
 import splashImage from './assets/print certo.jpg'; 
 import RegisterFormComponent from './pages/cadastro/Cadastro';
+import DashboardPage from './pages/dashboard/DashboardPage';
+
+// Componente para capturar o token OAuth2, autenticar no contexto e redirecionar
+const OAuth2RedirectHandler = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
+  useEffect(() => {
+    const token = searchParams.get('token');
+
+    if (token) {
+      // Chama o login do AuthContext (salva em '@HelpTec:token' e atualiza o estado)
+      login(token);
+      // Redireciona para o dashboard autenticado
+      navigate('/dashboard', { replace: true });
+    } else {
+      // Caso não venha token na URL, volta para a tela de cadastro/login
+      navigate('/cadastro', { replace: true });
+    }
+  }, [searchParams, navigate, login]);
+
+  return (
+    <div className="text-white flex items-center justify-center min-h-screen bg-[#050505]">
+      <p>Processando autenticação...</p>
+    </div>
+  );
+};
 
 // Componente Dashboard atualizado com botão de Logout
 const Dashboard = () => {
@@ -66,12 +92,17 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/cadastro" element={<RegisterFormComponent />}></Route>
+          <Route path="/cadastro" element={<RegisterFormComponent />} />
+          
+          {/* Rota OAuth2 adicionada (mantido /oauth2/ederect conforme solicitado, e /oauth2/redirect por segurança caso seja erro de digitação no backend) */}
+          <Route path="/oauth2/ederect" element={<OAuth2RedirectHandler />} />
+          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+
           <Route 
             path="/dashboard" 
             element={
               <PrivateRoute>
-                <Dashboard />
+                <DashboardPage />
               </PrivateRoute>
             } 
           />

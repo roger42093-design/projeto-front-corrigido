@@ -25,6 +25,7 @@ api.interceptors.request.use(
     if (token && token !== 'undefined' && token !== 'null' && !isPublicAuthRoute) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+     console.log(`[API Request] ${config.method?.toUpperCase()} -> ${config.url}`);
 
     if (import.meta.env?.DEV || process.env.NODE_ENV === 'development') {
       console.log(`[API Request] ${config.method?.toUpperCase()} -> ${config.url}`);
