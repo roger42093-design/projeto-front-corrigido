@@ -8,6 +8,7 @@ import './App.css';
 import splashImage from './assets/print certo.jpg'; 
 import RegisterFormComponent from './pages/cadastro/Cadastro';
 import DashboardPage from './pages/dashboard/DashboardPage';
+import ChamadosPage from './pages/chamados/ChamadosPage';
 
 // Componente para capturar o token OAuth2, autenticar no contexto e redirecionar
 const OAuth2RedirectHandler = () => {
@@ -103,6 +104,14 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardPage />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/chamados" 
+            element={
+              <PrivateRoute>
+                <ChamadosPage />
               </PrivateRoute>
             } 
           />
